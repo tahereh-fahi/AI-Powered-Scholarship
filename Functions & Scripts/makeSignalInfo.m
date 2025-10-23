@@ -42,8 +42,12 @@ else
 
 end
 
+var(isnan(me)) = nan;
+var(~isreal(var) | ~isfinite(var)) = nan;
+var = var+randn(size(me))*1e-12;
+
 ind = makeUnivSortInd(var, 5, NYSE);
-res = runUnivSort(ret, ind, dates, me, 'printResults', 0, ...
+res = runUnivSort(ret, ind, dates, me, 'timePeriod', 196307, 'printResults', 0, ...
     'plotFigure', 0);
 
 ptfNumStocks = res.ptfNumStocks(:,[1 end-1]);

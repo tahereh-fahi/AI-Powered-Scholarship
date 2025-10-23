@@ -10,7 +10,7 @@ clc
 stockFilter = 30;
 t_cutoff = 1.96;
 cmonth_cutoff = 360;
-emonth_cutoff = 202312;
+emonth_cutoff = 202412;
 
 
 % Step 1: Quintile, NYSE-breaks, EW
@@ -47,4 +47,4 @@ res = outerjoin(res, step4, 'Type','Left','MergeKeys', 1);
 ind = (res.rdndntFlag==false & res.endDate==emonth_cutoff & res.endDate2==emonth_cutoff & res.consecutiveDates>cmonth_cutoff & res.consecutiveDates2>cmonth_cutoff & abs(res.txret)>t_cutoff & abs(res.txret2)>t_cutoff & abs(res.txret3)>t_cutoff & abs(res.txret4)>t_cutoff & abs(res.talpha4)>t_cutoff);
 printRes = res(ind,:);
 
-save Res\printRes printRes
+save printRes printRes

@@ -7,19 +7,19 @@ load printRes.mat
 
 opts = detectImportOptions('Mining_Variable_List.xlsx', 'Sheet', 'Numerators');
 numerTable = readtable('Mining_Variable_List.xlsx', opts);
+ 
+parfor  i = 1:height(printRes)
+    i
+    if strcmp(char(printRes.signal(i)), 'diff')
+        numer = ['d_',char(printRes.numer(i))];
+    else
+        numer = char(printRes.numer(i));
+    end
+    denom = char(printRes.denom(i));
 
-% parfor  i = 1:height(printRes)
-%     i
-%     if strcmp(char(printRes.signal(i)), 'diff')
-%         numer = ['d_',char(printRes.numer(i))];
-%     else
-%         numer = char(printRes.numer(i));
-%     end
-%     denom = char(printRes.denom(i));
-% 
-%     [signalInfo(i,1)] = makeSignalInfo(numer, denom, numerTable);
-% end
-% save signalInfo signalInfo
+    [signalInfo(i,1)] = makeSignalInfo(numer, denom, numerTable);
+end
+save signalInfo signalInfo
 load signalInfo
 
 % Get the anomalies
@@ -45,6 +45,31 @@ for i = 1:length(signalInfo)
         fprintf('The identifier was:\n%s\n',e.identifier);
         fprintf('There was an error! The message was:\n%s\n',e.message);
     end
-       
+
 end
 
+%%
+
+clear
+clc
+
+load printRes.mat
+load signalInfo
+
+finalRes = printRes;
+finalRes.CloseSpanT = nan(length(signalInfo),1);
+
+for i = 1:length(signalInfo)
+    fileName = [signalInfo(i).SignalAcronym,'_Results.mat'];
+    if exist(fileName)
+        load(fileName)
+        finalRes.CloseSpanT(i) = ResStruct.resCloseSpan(7).tstat(1);
+        finalRes.varName(i) =  {signalInfo(i).SignalAcronym};
+    end
+end
+
+save finalRes finalRes
+
+temp = finalRes(abs(finalRes.CloseSpanT)>1.96,{'numer','denom','signal','varName'});
+filePath = [pwd,filesep,'tex',filesep,'signals.csv'];
+writetable(temp, filePath);
